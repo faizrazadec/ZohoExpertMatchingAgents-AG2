@@ -1,0 +1,19 @@
+CREATE TABLE IF NOT EXISTS new_clients (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+name TEXT NOT NULL,
+email TEXT NOT NULL,
+phone TEXT NOT NULL,
+consent BOOL NOT NULL,
+timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+
+CREATE TABLE IF NOT EXISTS existing_clients (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+
+INSERT INTO existing_clients (name, email, phone)
+VALUES ('exist', 'exist@example.com', '1234567890');

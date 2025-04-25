@@ -9,9 +9,7 @@ wheels/
 custom_workflow_test.txt
 .cache
 swarm_flow.py
-config
 main_test.py
-db
 
 # Virtual environments
 .venv
