@@ -1,8 +1,5 @@
 import sqlite3
 import json
-from logger import setup_logger
-
-logging = setup_logger()
 
 db_path = '/home/faizraza/Projects/ZohoExpertMatchingAgents-AG2/db/zoho_expert_matching_agents.db'
 
@@ -27,22 +24,18 @@ def new_clients(name: str, email: str, phone: str, consent: bool):
     """
 
     connection = sqlite3.connect(db_path)
-    logging.info("Connected to the database")
 
     cursor = connection.cursor()
-    logging.info("Cursor created")
     try:
         cursor.execute("INSERT INTO new_clients (name, email, phone, consent) VALUES (?, ?, ?, ?)",
                         (name, email, phone, consent,))
         connection.commit()
 
-        logging.info("Client added\nName: %s\nEmail: %s\nPhone: %s\nConsent: ", name, email, phone, consent)
         return json.dumps(
             {"status": "success", 
              "code": 200})
    
     except Exception as e:
-        logging.error(f"Error occurred: {e}")
         return json.dumps(
             {"status": "error",
              "message": str(e),
@@ -50,7 +43,6 @@ def new_clients(name: str, email: str, phone: str, consent: bool):
             )
    
     finally:
-        logging.critical("Closing the database connection")
         connection.close()
 
 def authentication(email: str, phone: str):
@@ -84,32 +76,46 @@ def authentication(email: str, phone: str):
     cursor = connection.cursor()
  
     try:
-        cursor.execute("SELECT * FROM new_clients WHERE email = ? AND phone = ?", (email, phone))
+        cursor.execute("SELECT * FROM existing_clients WHERE email = ? AND phone = ?", (email, phone))
         user = cursor.fetchone()
         if user:
-            logging.info("Client exist\nName: %s\nEmail: %s\nPhone: ", user[1], user[2], user[3])
             return json.dumps(
                 {"status": "success",
                  "code": 200}
                 )
         else:
-            logging.error("Client desn't exist\nEmail: %s\nPhone: ", email, phone)
             return json.dumps(
                 {"status": "error",
                 "code": 404}
                 )
         
     except Exception as e:
-        logging.error(f"Error occurred: {e}")
         return json.dumps(
             {"status": "error",
              "message": str(e),
              "code": 500}
             )
     finally:
-        logging.critical("Closing the database connection")
         connection.close()
        
  
-# print(authentication(email="mzeeshan@gmail.com", phone="12567890"))
+def hands_off(action: str) -> str:
+    """
+    Determines the next agent to hand off to based on the user's action or intent.
+
+    Args:
+        action (str): The action or intent provided by the user (e.g., 'connect', 'explore').
+
+    Returns:
+        str: The name of the agent to hand off control to.
+    """
+
+    action = action.lower()
+
+    if action == "connect":
+        return "connect_agent"
+    elif action == "explore":
+        return "explore_agent"
+    else:
+        return "the_human"
 
