@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS existing_clients (
 )
 
 INSERT INTO existing_clients (name, email, phone)
-VALUES ('exist', 'exist@example.com', '1234567890');
+VALUES ('Faiz', 'muhammad.faiz@dataropes.ai', '1234567890');
 
 CREATE TABLE IF NOT EXISTS experts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

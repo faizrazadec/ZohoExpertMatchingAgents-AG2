@@ -185,6 +185,15 @@ wheels = [
 ]
 
 [[package]]
+name = "imap-tools"
+version = "1.10.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/14/cf/518b18ed94fe8a93f5a55553566449902e990b0ad7d34e26b8c4ecd332f6/imap_tools-1.10.0.tar.gz", hash = "sha256:3d2bee8e2900a58a3bf91e09531e548453f91fae2e491965030a4d96c4a34557", size = 45963 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/54/22/0ba0bc50f52033ef00c83c276c4ab85810a8d0d74bcf27ac83324aa8daba/imap_tools-1.10.0-py3-none-any.whl", hash = "sha256:8b8794f0ffe4b3de1e72dea4e0b77ed744d9cd225ecaace81976a599eec0947b", size = 34655 },
+]
+
+[[package]]
 name = "jiter"
 version = "0.9.0"
 source = { registry = "https://pypi.org/simple" }
@@ -495,7 +504,11 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "ag2", extra = ["openai"] },
+    { name = "imap-tools" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "ag2", extras = ["openai"], specifier = ">=0.8.7" }]
+requires-dist = [
+    { name = "ag2", extras = ["openai"], specifier = ">=0.8.7" },
+    { name = "imap-tools", specifier = ">=1.10.0" },
+]
