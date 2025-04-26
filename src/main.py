@@ -12,12 +12,14 @@ from autogen import (
 from functions import (
     new_clients,
     authentication,
-    hands_off
+    hands_off,
+    retrive_experts
 )
 
 from prompts import (
     system_prompt_auth_agent,
-    system_prompt_intent_agent
+    system_prompt_intent_agent,
+    system_prompt_connect_agent
 )
 
 load_dotenv()
@@ -50,7 +52,7 @@ connect_agent = ConversableAgent(
     name="connect_agent",
     human_input_mode="NEVER",
     llm_config=llm_config,
-    system_message="You are an Connect Agent. Your role is to assist clients in connecting with experts or scheduling meetings.",
+    system_message=system_prompt_connect_agent,
 )
 
 the_human = ConversableAgent(
@@ -91,6 +93,13 @@ register_function(
     description="This function determines which specialized agent (e.g., explore_agent or connect_agent) should handle the next part of the conversation based on the client's intent. It returns the name of the agent to hand off to.",
 )
 
+register_function(
+    retrive_experts    ,
+    caller=connect_agent,
+    executor=executor_agent,
+    description="This function retrieves a list of all expert profiles stored in the database. It returns detailed information including name, email, qualifications, past companies, country, areas of expertise, years of experience, and timestamp. It is typically used by the connect_agent to find and display relevant experts to the client.",
+)
+
 def custom_speaker_selection_func(last_speaker: Agent, groupchat: GroupChat):
     """Custom function to determine the next speaker in a structured agent workflow."""
     messages = groupchat.messages
@@ -100,6 +109,9 @@ def custom_speaker_selection_func(last_speaker: Agent, groupchat: GroupChat):
 
     if len(messages) > 2  and last_speaker is the_human and  messages[-2].get("name") == "intent_agent":
         return intent_agent
+    
+    elif len(messages) > 2  and last_speaker is the_human and messages[-2].get("name") == "connect_agent":
+        return connect_agent
 
     elif last_speaker is the_human:
         return auth_agent
@@ -115,10 +127,19 @@ def custom_speaker_selection_func(last_speaker: Agent, groupchat: GroupChat):
             return executor_agent
         else:
             return the_human
+        
+    elif last_speaker is connect_agent:
+        if messages and messages[-1].get("tool_calls"):
+            return executor_agent
+        else:
+            return the_human
 
     elif last_speaker is executor_agent:
         if messages[-1].get("role") == "tool" and messages[-1].get("content") == "{\"status\": \"success\", \"code\": 200}" and messages[-2]["tool_calls"][0]["function"]["name"] == "authentication":
             return intent_agent
+        
+        elif last_speaker is executor_agent and messages[-2].get("name") == "connect_agent":
+            return the_human
         
         elif messages[-1].get("role") == "tool":
             tool_output = messages[-1].get("content")

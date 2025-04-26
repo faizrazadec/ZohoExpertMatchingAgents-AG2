@@ -1,7 +1,7 @@
 import sqlite3
 import json
 
-db_path = '/home/faizraza/Projects/ZohoExpertMatchingAgents-AG2/db/zoho_expert_matching_agents.db'
+db_path = '/home/faizraza/Projects/ZohoExpertMatchingAgents-AG2/db/zoho_database.db'
 
 def new_clients(name: str, email: str, phone: str, consent: bool):
     """
@@ -119,3 +119,30 @@ def hands_off(action: str) -> str:
     else:
         return "the_human"
 
+def retrive_experts():
+    """
+    Retrieves all expert records from the 'experts' table in the SQLite database.
+
+    Returns:
+        list: A list of dictionaries, each representing an expert record.
+    """
+
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("SELECT * FROM experts")
+        column_names = [description[0] for description in cursor.description]  # Get column names
+        experts = cursor.fetchall()
+        
+        return [dict(zip(column_names, row)) for row in experts]
+    
+    except Exception as e:
+        return json.dumps(
+            {"status": "error",
+             "message": str(e),
+             "code": 500}
+        )
+    
+    finally:
+        connection.close()
