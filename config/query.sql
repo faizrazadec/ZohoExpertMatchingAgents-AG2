@@ -1,3 +1,4 @@
+-- Table new_clients: TO store new clients' information
 CREATE TABLE IF NOT EXISTS new_clients (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 name TEXT NOT NULL,
@@ -7,17 +8,18 @@ consent BOOL NOT NULL,
 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 )
 
-CREATE TABLE IF NOT EXISTS existing_clients (
+-- Table existing_clients: TO store existing clients' information
+CREATE TABLE IF NOT EXISTS clients (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id TEXT UNIQUE NOT NULL,
     name TEXT NOT NULL,
     email TEXT NOT NULL,
     phone TEXT NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-)
+);
 
-INSERT INTO existing_clients (name, email, phone)
-VALUES ('Faiz', 'muhammad.faiz@dataropes.ai', '1234567890');
 
+-- Table experts: TO store experts' information
 CREATE TABLE IF NOT EXISTS experts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -28,7 +30,7 @@ CREATE TABLE IF NOT EXISTS experts (
     areas_of_expertise TEXT,
     years_of_experience INTEGER,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-)
+);
 
 INSERT INTO experts (name, email, qualification, past_companies, country, areas_of_expertise, years_of_experience) VALUES
 ('Alice Smith', 'alice.smith@example.com', 'PhD, Computer Science', 'Google, Microsoft', 'USA', 'Artificial Intelligence', 15),
@@ -151,3 +153,13 @@ INSERT INTO experts (name, email, qualification, past_companies, country, areas_
 ('Daniel Hayes', 'daniel.hayes@example.com', 'MS, Pharmacology', 'Johnson & Johnson', 'USA', 'Biotechnology', 17),
 ('Emily Bennett', 'emily.bennett@example.com', 'BS, Biology', 'Merck & Co.', 'USA', 'Biotechnology', 13),
 ('Frank Wood', 'frank.wood@example.com', 'PhD, Bioinformatics', 'Illumina', 'USA', 'Biotechnology', 22);
+
+CREATE TABLE IF NOT EXISTS conversation_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    thread_id TEXT NOT NULL,
+    client_id TEXT,
+    sender TEXT NOT NULL,
+    source TEXT NOT NULL,
+    message TEXT NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
