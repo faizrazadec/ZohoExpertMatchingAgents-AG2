@@ -8,4 +8,5 @@ dependencies = [
     "ag2[openai]>=0.8.7",
     "imap-tools>=1.10.0",
     "openai>=1.75.0",
+    "pandas>=2.2.3",
 ]

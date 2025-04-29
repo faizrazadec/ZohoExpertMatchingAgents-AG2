@@ -12,36 +12,49 @@ cursor = connection.cursor()
 
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS new_clients (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    phone TEXT NOT NULL,
-    consent BOOL NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        consent BOOL NOT NULL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )
 ''')
 
 cursor.execute('''
-    CREATE TABLE IF NOT EXISTS existing_clients (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    phone TEXT NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    CREATE TABLE IF NOT EXISTS clients (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        client_id TEXT UNIQUE NOT NULL,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )
 ''')
 
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS experts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    qualification TEXT,
-    past_companies TEXT,
-    country TEXT,
-    areas_of_expertise TEXT,
-    years_of_experience INTEGER,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        qualification TEXT,
+        past_companies TEXT,
+        country TEXT,
+        areas_of_expertise TEXT,
+        years_of_experience INTEGER,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+''')
+
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS conversation_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        thread_id TEXT NOT NULL,
+        client_id TEXT,
+        sender TEXT NOT NULL,
+        source TEXT NOT NULL,
+        message TEXT NOT NULL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
     )
 ''')
 

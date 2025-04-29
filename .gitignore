@@ -16,6 +16,8 @@ email_flow/flow.py
 email_flow/functions.py
 email_flow/main_2.5.py
 Logs.log
+email_flow/function_callings.py
+*.csv
 
 
 # Virtual environments

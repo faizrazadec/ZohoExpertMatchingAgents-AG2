@@ -6,7 +6,7 @@ email TEXT NOT NULL,
 phone TEXT NOT NULL,
 consent BOOL NOT NULL,
 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-)
+);
 
 -- Table existing_clients: TO store existing clients' information
 CREATE TABLE IF NOT EXISTS clients (
