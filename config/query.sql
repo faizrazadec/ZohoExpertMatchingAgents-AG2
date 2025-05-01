@@ -1,11 +1,12 @@
 -- Table new_clients: TO store new clients' information
-CREATE TABLE IF NOT EXISTS new_clients (
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-name TEXT NOT NULL,
-email TEXT NOT NULL,
-phone TEXT NOT NULL,
-consent BOOL NOT NULL,
-timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS visitors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    visitor_id TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    consent BOOL NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Table existing_clients: TO store existing clients' information
@@ -17,7 +18,6 @@ CREATE TABLE IF NOT EXISTS clients (
     phone TEXT NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-
 
 -- Table experts: TO store experts' information
 CREATE TABLE IF NOT EXISTS experts (
@@ -154,12 +154,13 @@ INSERT INTO experts (name, email, qualification, past_companies, country, areas_
 ('Emily Bennett', 'emily.bennett@example.com', 'BS, Biology', 'Merck & Co.', 'USA', 'Biotechnology', 13),
 ('Frank Wood', 'frank.wood@example.com', 'PhD, Bioinformatics', 'Illumina', 'USA', 'Biotechnology', 22);
 
-CREATE TABLE IF NOT EXISTS conversation_history (
+-- Table chat_history: TO store chat history
+CREATE TABLE IF NOT EXISTS chat_history (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    thread_id TEXT NOT NULL,
-    client_id TEXT,
+    user_id TEXT NOT NULL,
+    channel TEXT NOT NULL,
+    is_client BOOL NOT NULL,
     sender TEXT NOT NULL,
-    source TEXT NOT NULL,
     message TEXT NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );

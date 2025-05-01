@@ -11,12 +11,7 @@ custom_workflow_test.txt
 swarm_flow.py
 main_test.py
 test.py
-email_flow/email_main.py
-email_flow/flow.py
-email_flow/functions.py
-email_flow/main_2.5.py
 Logs.log
-email_flow/function_callings.py
 *.csv
 
 

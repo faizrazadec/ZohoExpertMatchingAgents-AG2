@@ -11,14 +11,15 @@ connection = sqlite3.connect(db_path)
 cursor = connection.cursor()
 
 cursor.execute('''
-    CREATE TABLE IF NOT EXISTS new_clients (
+    CREATE TABLE IF NOT EXISTS visitors (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        visitor_id TEXT UNIQUE NOT NULL,
         name TEXT NOT NULL,
         email TEXT NOT NULL,
         phone TEXT NOT NULL,
         consent BOOL NOT NULL,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
+    );
 ''')
 
 cursor.execute('''
@@ -29,7 +30,7 @@ cursor.execute('''
         email TEXT NOT NULL,
         phone TEXT NOT NULL,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
+    );
 ''')
 
 cursor.execute('''
@@ -43,19 +44,19 @@ cursor.execute('''
         areas_of_expertise TEXT,
         years_of_experience INTEGER,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
+    );
 ''')
 
 cursor.execute('''
-    CREATE TABLE IF NOT EXISTS conversation_history (
+    CREATE TABLE IF NOT EXISTS chat_history (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        thread_id TEXT NOT NULL,
-        client_id TEXT,
+        user_id TEXT NOT NULL,
+        channel TEXT NOT NULL,
+        is_client BOOL NOT NULL,
         sender TEXT NOT NULL,
-        source TEXT NOT NULL,
         message TEXT NOT NULL,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
+    );
 ''')
 
 connection.commit()
