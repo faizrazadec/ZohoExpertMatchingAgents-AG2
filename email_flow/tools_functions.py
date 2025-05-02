@@ -6,39 +6,38 @@ from .utils import is_valid_email, is_valid_phone_number, generate_id, generate_
 from config.config import DB_PATH
 from logger.custom_logger import setup_logger
 
-logger = setup_logger()
+log = setup_logger()
 
 def retrieve_experts():
-    logger.info("Retrieving experts from database...")
+    log.info("Retrieving experts from database...")
     try:
         with sqlite3.connect(DB_PATH) as connection:
-            connection = sqlite3.connect(DB_PATH)
             cursor = connection.cursor()
-            logger.info("Connected to database successfully.")
+            log.info("Connected to database successfully.")
 
             cursor.execute("SELECT * FROM experts")
             column_names = [description[0] for description in cursor.description]
             experts = cursor.fetchall()
-            logger.info("Experts retrieved successfully.")
+            log.info("Experts retrieved successfully.")
             return [dict(zip(column_names, row)) for row in experts]
     
     except sqlite3.Error as e:
-        logger.error("Failed to retrieve experts: %s", e)
+        log.error("Failed to retrieve experts: %s", e)
         return {"status": "error", "message": str(e), "code": 500}
     
     except Exception as e:
-        logger.error("Unexpected error: %s", e)
+        log.error("Unexpected error: %s", e)
         return {"status": "error", "message": str(e), "code": 500}
     
 def add_visitor(name: str, email: str, phone: str, consent: bool):
-    logger.info("Adding new visitor: %s with email: %s and phone: %s", name, email, phone)
+    log.info("Adding new visitor: %s with email: %s and phone: %s", name, email, phone)
     
     if not is_valid_email(email):
-        logger.critical("Process: Adding visitor aborted.")
+        log.critical("Process: Adding visitor aborted.")
         return None
     
     if not is_valid_phone_number(phone):
-        logger.critical("Process: Adding visitor aborted.")
+        log.critical("Process: Adding visitor aborted.")
         return None
     
     visitor_id = generate_id(email, phone)
@@ -47,12 +46,12 @@ def add_visitor(name: str, email: str, phone: str, consent: bool):
     try:
         with sqlite3.connect(DB_PATH) as connection:
             cursor = connection.cursor()
-            logger.info("Connected to database successfully.")
+            log.info("Connected to database successfully.")
             
             cursor.execute("INSERT INTO visitors (visitor_id, name, email, phone, consent) VALUES (?, ?, ?, ?, ?)",
                         (visitor_id, name, email, phone, int(consent)))
             connection.commit()
-            logger.info("Visitor added successfully.")
+            log.info("Visitor added successfully.")
 
             cursor.execute("UPDATE chat_history SET user_id = ? WHERE user_id = ?", (visitor_id, temp_id))
             connection.commit()
@@ -63,9 +62,9 @@ def add_visitor(name: str, email: str, phone: str, consent: bool):
             return json.dumps({"status": "success", "code": 200})
     
     except sqlite3.IntegrityError as e:
-        logger.error(f"Visitor already exists: {e}")
+        log.error(f"Visitor already exists: {e}")
         return json.dumps({"status": "error", "message": "Visitor already exists", "code": 409})
     
     except Exception as e:
-        logger.error(f"Error adding visitor: {e}")
+        log.error(f"Error adding visitor: {e}")
         return json.dumps({"status": "error", "message": str(e), "code": 500})

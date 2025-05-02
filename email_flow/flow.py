@@ -14,7 +14,6 @@ from .db_flow_functions import (
 from .utils import (
     authentication_email,
     generate_temp_id,
-    flag
 )
 
 from .openai_flow_functions import (
@@ -24,15 +23,15 @@ from .openai_flow_functions import (
 
 from logger.custom_logger import setup_logger
 
-logger = setup_logger(__name__)
+log = setup_logger(__name__)
 load_dotenv()
 
 def process_incoming_emails(DB_PATH, system_prompt_not_client, system_prompt_email_generator, EMAIL_ACCOUNT, SMTP_SERVER, IMAP_SERVER, EMAIL_APP_PASSWORD):
-    logger.info("Email flow triggered.")
+    log.info("Email flow triggered.")
     try:
         new_emails = fetch_unread_emails(IMAP_SERVER, EMAIL_ACCOUNT, EMAIL_APP_PASSWORD)
     except Exception as e:
-        logger.error("Failed to fetch unread emails: %s", e)
+        log.error("Failed to fetch unread emails: %s", e)
         return
 
     for email_data in new_emails:
@@ -51,18 +50,18 @@ def process_incoming_emails(DB_PATH, system_prompt_not_client, system_prompt_ema
                 save_message(DB_PATH, is_client=True, sender=EMAIL_ACCOUNT, message=reply_body, user_id=client_id)
                 success = send_email(sender, "Re: " + subject, reply_body, EMAIL_ACCOUNT, SMTP_SERVER, EMAIL_APP_PASSWORD, in_reply_to=message_id)
                 if not success:
-                    logger.error(f"Failed to send email to {sender}")
+                    log.error(f"Failed to send email to {sender}")
                 else:
-                    logger.info(f"Email successfully sent to {sender}")
+                    log.info(f"Email successfully sent to {sender}")
 
             else:
-                logger.info("Sender not found in database. Sending onboarding invitation...")
+                log.info("Sender not found in database. Sending onboarding invitation...")
                 if os.environ.get("FLAG") == 'true':
                     user_id = generate_temp_id(sender)
-                    logger.critical("False User ID: %s", user_id)
+                    log.critical("False User ID: %s", user_id)
                 else:
                     user_id = os.environ.get("USER_ID")
-                    logger.critical("True User ID: %s", user_id)
+                    log.critical("True User ID: %s", user_id)
 
                 # temp_id = generate_temp_id(sender)
                 save_message(DB_PATH, is_client=False, sender=sender, message=body, user_id=user_id)
@@ -71,8 +70,8 @@ def process_incoming_emails(DB_PATH, system_prompt_not_client, system_prompt_ema
                 save_message(DB_PATH, is_client=False, sender=EMAIL_ACCOUNT, message=reply_body, user_id=user_id)
                 success = send_email(sender, "Re: " + subject, reply_body, EMAIL_ACCOUNT, SMTP_SERVER, EMAIL_APP_PASSWORD, in_reply_to=message_id)
                 if not success:
-                    logger.error(f"Failed to send onboarding email to {sender}")
+                    log.error(f"Failed to send onboarding email to {sender}")
                 else:
-                    logger.info(f"Onboarding email successfully sent to {sender}")
+                    log.info(f"Onboarding email successfully sent to {sender}")
         except Exception as e:
-            logger.error("Failed to process email from %s: %s", sender, e)
+            log.error("Failed to process email from %s: %s", sender, e)

@@ -7,25 +7,25 @@ from logger.custom_logger import setup_logger
 
 from .utils import is_list_meaningfully_empty
 
-logger = setup_logger(__name__)
+log = setup_logger(__name__)
     
 def mail_login(IMAP_SERVER, EMAIL_ACCOUNT, EMAIL_APP_PASSWORD):
-    logger.info("Logging in to email account...")
+    log.info("Logging in to email account...")
     try:
         mail = imaplib.IMAP4_SSL(IMAP_SERVER)
         mail.login(EMAIL_ACCOUNT, EMAIL_APP_PASSWORD)
-        logger.info("Logged in to email account successfully.")
+        log.info("Logged in to email account successfully.")
         return mail
     except imaplib.IMAP4.error as e:
-        logger.error("Failed to login to email account: %s. Please check your credentials or IMAP server settings.", e)
+        log.error("Failed to login to email account: %s. Please check your credentials or IMAP server settings.", e)
         return None
     
 def fetch_unread_emails(IMAP_SERVER, EMAIL_ACCOUNT, EMAIL_APP_PASSWORD):
-    logger.info("Fetching unread emails...")
+    log.info("Fetching unread emails...")
     try:
         mail = mail_login(IMAP_SERVER, EMAIL_ACCOUNT, EMAIL_APP_PASSWORD)
         if mail is None:
-            logger.error("Failed to login to email account.")
+            log.error("Failed to login to email account.")
             return []
 
         mail.select('inbox')
@@ -33,15 +33,15 @@ def fetch_unread_emails(IMAP_SERVER, EMAIL_ACCOUNT, EMAIL_APP_PASSWORD):
         status, response = mail.search(None, '(UNSEEN)')
 
         if status != 'OK':
-            logger.error("Failed to search for unread emails: %s", status)
+            log.error("Failed to search for unread emails: %s", status)
             return []
 
         is_new = is_list_meaningfully_empty(response)
         if is_new:
-            logger.info("No new emails.")
+            log.info("No new emails.")
             return []
         else:
-            logger.info("New emails.")
+            log.info("New emails.")
 
         unread_msg_nums = response[0].split()
 
@@ -56,7 +56,7 @@ def fetch_unread_emails(IMAP_SERVER, EMAIL_ACCOUNT, EMAIL_APP_PASSWORD):
                 subject = msg['Subject']
 
                 if msg.is_multipart():
-                    logger.info("Email is multipart")
+                    log.info("Email is multipart")
                     body = ''
                     for part in msg.walk():
                         if part.get_content_type() == 'text/plain':
@@ -71,19 +71,19 @@ def fetch_unread_emails(IMAP_SERVER, EMAIL_ACCOUNT, EMAIL_APP_PASSWORD):
                     "message_id": msg['Message-ID']
                 })
             except Exception as e:
-                logger.error("Failed to parse email: %s", e)
+                log.error("Failed to parse email: %s", e)
 
         mail.logout()
-        logger.info("Logged out to email account successfully.")
+        log.info("Logged out to email account successfully.")
         return emails
     except Exception as e:
-        logger.error("Failed to fetch unread emails: %s", e)
+        log.error("Failed to fetch unread emails: %s", e)
         return []
     
 def send_email(to_address, subject, body, EMAIL_ACCOUNT, SMTP_SERVER, EMAIL_APP_PASSWORD, in_reply_to=None):
-    logger.info("Sending email to %s", to_address)
+    log.info("Sending email to %s", to_address)
     if body is None:
-        logger.error("Email body is None. Cannot send email.")
+        log.error("Email body is None. Cannot send email.")
         return False
 
     msg = MIMEText(body)
@@ -96,17 +96,17 @@ def send_email(to_address, subject, body, EMAIL_ACCOUNT, SMTP_SERVER, EMAIL_APP_
         msg['References'] = in_reply_to
 
     try:
-        logger.info("Connecting to SMTP server...")
+        log.info("Connecting to SMTP server...")
         with smtplib.SMTP_SSL(SMTP_SERVER, 465) as server:
             # server.set_debuglevel(1)
             server.login(EMAIL_ACCOUNT, EMAIL_APP_PASSWORD)
-            logger.info("Sending email...")
+            log.info("Sending email...")
             server.sendmail(EMAIL_ACCOUNT, to_address, msg.as_string())
-            logger.info("Email sent successfully.")
+            log.info("Email sent successfully.")
         return True
     except smtplib.SMTPException as e:
-        logger.error("Failed to send email via SMTP server: %s", e)
+        log.error("Failed to send email via SMTP server: %s", e)
         return False
     except Exception as e:
-        logger.error("Unexpected error sending email: %s", e)
+        log.error("Unexpected error sending email: %s", e)
         return False
