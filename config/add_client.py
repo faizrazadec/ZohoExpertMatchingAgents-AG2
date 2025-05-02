@@ -6,40 +6,40 @@ from phonenumbers.phonenumberutil import NumberParseException
 
 from logger.custom_logger import setup_logger
 
-logger = setup_logger()
+log = setup_logger()
 
 def is_valid_email(email: str) -> bool:
     try:
         validate_email(email)
-        logger.info(f"Email {email} is valid.")
+        log.info(f"Email {email} is valid.")
         return True
     except EmailNotValidError:
-        logger.error(f"Email {email} is not valid.")
+        log.error(f"Email {email} is not valid.")
         return False
     
 def is_valid_phone_number(phone: str) -> bool:
     try:
         parsed_number = phonenumbers.parse(phone, None)
         phonenumbers.is_valid_number(parsed_number)
-        logger.info(f"Phone number {phone} is valid.")
+        log.info(f"Phone number {phone} is valid.")
         return True
     except NumberParseException:
-        logger.error(f"Phone number {phone} is not valid.")
+        log.error(f"Phone number {phone} is not valid.")
         return False
 
 def generate_id(email: str, phone: str) -> str:
-    logger.info(f"Generating ID for email: {email} and phone: {phone}")
+    log.info(f"Generating ID for email: {email} and phone: {phone}")
     if is_valid_email(email) and is_valid_phone_number(phone):
         try:
             name = f"{email}-{phone}"
             id = str(uuid.uuid5(uuid.NAMESPACE_DNS, name))
-            logger.info(f"Generated ID: {id}")
+            log.info(f"Generated ID: {id}")
             return id
         except Exception as e:
-            logger.error(f"Error generating ID: {e}")
+            log.error(f"Error generating ID: {e}")
             return None
     else:
-        logger.error(f"Invalid email or phone number provided.")
+        log.error(f"Invalid email or phone number provided.")
         return None
 
 def insert_client(name, email, phone):

@@ -60,9 +60,15 @@ def fetch_unread_emails(IMAP_SERVER, EMAIL_ACCOUNT, EMAIL_APP_PASSWORD):
                     body = ''
                     for part in msg.walk():
                         if part.get_content_type() == 'text/plain':
-                            body += part.get_payload(decode=True).decode()
+                            try:
+                                body += part.get_payload(decode=True).decode('utf-8')
+                            except UnicodeDecodeError:
+                                body += part.get_payload(decode=True).decode('latin1')
                 else:
-                    body = msg.get_payload(decode=True).decode()
+                    try:
+                        body = msg.get_payload(decode=True).decode('utf-8')
+                    except UnicodeDecodeError:
+                        body = msg.get_payload(decode=True).decode('latin1')
 
                 emails.append({
                     "from": from_email,

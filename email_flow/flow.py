@@ -14,6 +14,7 @@ from .db_flow_functions import (
 from .utils import (
     authentication_email,
     generate_temp_id,
+    authenticate_visitor
 )
 
 from .openai_flow_functions import (
@@ -54,24 +55,46 @@ def process_incoming_emails(DB_PATH, system_prompt_not_client, system_prompt_ema
                 else:
                     log.info(f"Email successfully sent to {sender}")
 
-            else:
-                log.info("Sender not found in database. Sending onboarding invitation...")
-                if os.environ.get("FLAG") == 'true':
-                    user_id = generate_temp_id(sender)
-                    log.critical("False User ID: %s", user_id)
-                else:
-                    user_id = os.environ.get("USER_ID")
-                    log.critical("True User ID: %s", user_id)
+                log.warning("Sender not found in database. Sending onboarding invitation...")
 
-                # temp_id = generate_temp_id(sender)
-                save_message(DB_PATH, is_client=False, sender=sender, message=body, user_id=user_id)
-                conversation = get_conversation(DB_PATH, user_id=user_id)
-                reply_body = generate_visitor_reply(conversation, system_prompt_not_client, visitor_email=sender)
-                save_message(DB_PATH, is_client=False, sender=EMAIL_ACCOUNT, message=reply_body, user_id=user_id)
-                success = send_email(sender, "Re: " + subject, reply_body, EMAIL_ACCOUNT, SMTP_SERVER, EMAIL_APP_PASSWORD, in_reply_to=message_id)
-                if not success:
-                    log.error(f"Failed to send onboarding email to {sender}")
+
+            else:
+                visitor_id = authenticate_visitor(DB_PATH, sender)
+
+                if visitor_id:
+                    log.info("Visitor ID found in database. Sending onboarding invitation...")
+                    save_message(DB_PATH, is_client=False, sender=sender, message=body, user_id=visitor_id)
+                    conversation = get_conversation(DB_PATH, user_id=visitor_id)
+                    reply_body = generate_visitor_reply(conversation, system_prompt_not_client, visitor_email=sender)
+                    save_message(DB_PATH, is_client=False, sender=EMAIL_ACCOUNT, message=reply_body, user_id=visitor_id)
+                    success = send_email(sender, "Re: " + subject, reply_body, EMAIL_ACCOUNT, SMTP_SERVER, EMAIL_APP_PASSWORD, in_reply_to=message_id)
+                    if not success:
+                        log.error(f"Failed to send onboarding email to {sender}")
+                    else:
+                        log.info(f"Onboarding email successfully sent to {sender}")
+
                 else:
-                    log.info(f"Onboarding email successfully sent to {sender}")
+                    log.info("Sender not found in database. Sending onboarding invitation...")
+                    if os.environ.get("FLAG") == 'true':
+                        user_id = generate_temp_id(sender)
+                        log.critical("False User ID: %s", user_id)
+                    else:
+                        user_id = os.environ.get("USER_ID")
+                        log.critical("True User ID: %s", user_id)
+
+                    # temp_id = generate_temp_id(sender)
+                    save_message(DB_PATH, is_client=False, sender=sender, message=body, user_id=user_id)
+                    conversation = get_conversation(DB_PATH, user_id=user_id)
+                    reply_body = generate_visitor_reply(conversation, system_prompt_not_client, visitor_email=sender)
+                    save_message(DB_PATH, is_client=False, sender=EMAIL_ACCOUNT, message=reply_body, user_id=user_id)
+                    success = send_email(sender, "Re: " + subject, reply_body, EMAIL_ACCOUNT, SMTP_SERVER, EMAIL_APP_PASSWORD, in_reply_to=message_id)
+                    if not success:
+                        log.error(f"Failed to send onboarding email to {sender}")
+                    else:
+                        log.info(f"Onboarding email successfully sent to {sender}")
+
+                    os.environ["FLAG"] = 'true'
+                    log.info("Flag set to true.")
+
         except Exception as e:
             log.error("Failed to process email from %s: %s", sender, e)

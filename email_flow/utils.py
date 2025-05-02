@@ -95,3 +95,30 @@ def generate_temp_id(input_value: str) -> str:
     
 def is_list_meaningfully_empty(my_list):
     return all(item.strip() == b'' for item in my_list)
+
+def authenticate_visitor(DB_PATH, email: str) -> str | None:
+    log.info(f"Authenticating visitor with email: {email}")
+    
+    if not is_valid_email(email):
+        log.critical("Authentication aborted.")
+        return None
+
+    try:
+        with sqlite3.connect(DB_PATH) as connection:
+            cursor = connection.cursor()
+            log.info("Connected to database successfully.")
+            
+            cursor.execute("SELECT visitor_id FROM visitors WHERE email = ?", (email,))
+            result = cursor.fetchone()
+            
+            if result:
+                visitor_id = result[0]
+                log.info("Authentication successful. Visitor ID: %s", visitor_id)
+                return visitor_id
+            else:
+                log.warning("Authentication failed. Email not found.")
+                return None
+    
+    except Exception as e:
+        log.error(f"Error during authentication: {e}")
+        return None

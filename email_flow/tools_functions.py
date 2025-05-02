@@ -58,6 +58,7 @@ def add_visitor(name: str, email: str, phone: str, consent: bool):
 
             os.environ["FLAG"] = 'false'
             os.environ["USER_ID"] = visitor_id
+            log.info("Flag set to false and USER_ID updated.")
 
             return json.dumps({"status": "success", "code": 200})
     
