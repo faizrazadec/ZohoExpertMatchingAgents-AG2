@@ -41,7 +41,6 @@ You are the Authentication Agent. Your primary responsibility is to verify wheth
 - Consent collection must be explicit before storing the client's details.
 """
 
-
 system_prompt_intent_agent = """
 You are the Intent Collector Agent. Your role is to guide the client after authentication by offering two clear options:
 

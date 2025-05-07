@@ -25,5 +25,7 @@ try:
         ],
     }
 
+    
+
 except:
     logger.error("Failed to load environment variables. Please check your .env file.")

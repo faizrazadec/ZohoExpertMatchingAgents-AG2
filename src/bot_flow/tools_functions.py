@@ -275,24 +275,25 @@ def add_visitor(name: str, email: str, phone: str, consent: bool) -> int | None:
         }
  
 def hands_off(action: str) -> str:
-    """
-    Determines the next agent to hand off to based on the user's action or intent.
+    """Map an action to a corresponding agent name.
+
+    Converts the given action string to lowercase and returns the 
+    name of the agent responsible for that action. Supported actions 
+    are "connect" and "explore". If the action is unrecognized, 
+    returns "the_human".
 
     Args:
-        action (str): The action or intent provided by the user (e.g., 'connect', 'explore').
+        action: The name of the action to evaluate.
 
     Returns:
-        str: The name of the agent to hand off control to.
+        The name of the agent corresponding to the action.
     """
+    agent_map = {
+        "connect": "connect_agent",
+        "explore": "explore_agent"
+    }
+    return agent_map.get(action.lower(), "the_human")
 
-    action = action.lower()
-
-    if action == "connect":
-        return "connect_agent"
-    elif action == "explore":
-        return "explore_agent"
-    else:
-        return "the_human"
 
 def retrive_experts():
     """

@@ -1,3 +1,5 @@
+import json
+
 from autogen import (
     register_function,
     GroupChat,
@@ -22,6 +24,8 @@ from src.bot_flow.agents import (
     intent_agent,
 
 )
+
+from src.bot_flow.flow import custom_speaker_selection_func
 
 from logger.custom_logger import setup_logger
 
@@ -61,77 +65,6 @@ register_function(
     executor=executor_agent,
     description="This function retrieves a list of all expert profiles stored in the database. It returns detailed information including name, email, qualifications, past companies, country, areas of expertise, years of experience, and timestamp. It is typically used by the connect_agent to find and display relevant experts to the client.",
 )
-
-def custom_speaker_selection_func(last_speaker: Agent, groupchat: GroupChat):
-    """Custom function to determine the next speaker in a structured agent workflow."""
-    messages = groupchat.messages
-
-    log.critical(messages[-1])
-
-    if last_speaker is the_human:
-        return auth_agent
-    
-    elif last_speaker is auth_agent:
-        if messages[-1].get("tool_calls"):
-            return executor_agent
-        else:
-            return the_human 
-        
-    elif last_speaker is executor_agent:
-        return auth_agent
-
-    # if len(messages) <= 1:
-    #     return the_human  # Start with the human agent
-
-    # if len(messages) > 2  and last_speaker is the_human and  messages[-2].get("name") == "intent_agent":
-    #     return intent_agent
-    
-    # elif len(messages) > 2  and last_speaker is the_human and messages[-2].get("name") == "connect_agent":
-    #     return connect_agent
-
-    # elif last_speaker is the_human:
-    #     return auth_agent
-
-    # elif last_speaker is auth_agent:
-    #     if messages and messages[-1].get("tool_calls"):
-    #         return executor_agent
-    #     else:
-    #         return the_human 
-        
-    # elif last_speaker is intent_agent:
-    #     if messages and messages[-1].get("tool_calls"):
-    #         return executor_agent
-    #     else:
-    #         return the_human
-        
-    # elif last_speaker is connect_agent:
-    #     if messages and messages[-1].get("tool_calls"):
-    #         return executor_agent
-    #     else:
-    #         return the_human
-
-    # elif last_speaker is executor_agent:
-    #     if messages[-1].get("role") == "tool" and messages[-1].get("content") == "{\"status\": \"success\", \"code\": 200}" and messages[-2]["tool_calls"][0]["function"]["name"] == "authentication":
-    #         return intent_agent
-        
-    #     elif last_speaker is executor_agent and messages[-2].get("name") == "connect_agent":
-    #         return the_human
-        
-    #     elif messages[-1].get("role") == "tool":
-    #         tool_output = messages[-1].get("content")
-    #         tool_name = messages[-2].get("tool_calls", [{}])[0].get("function", {}).get("name", "")
-
-    #         if tool_name == "hands_off":
-    #             if tool_output == "connect_agent":
-    #                 return connect_agent
-                
-    #             elif tool_output == "explore_agent":
-    #                 return explore_agent
-                
-    #     return the_human
-        
-    # else:
-    #     return "random"
     
 planning_chat = GroupChat(
     agents=[the_human, auth_agent, executor_agent, intent_agent, connect_agent, explore_agent],
