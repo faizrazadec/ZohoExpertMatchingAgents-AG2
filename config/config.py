@@ -13,6 +13,17 @@ try:
     SMTP_SERVER = os.getenv("SMTP_SERVER")
     DB_PATH = os.getenv("DB_PATH")
     MODEL_NAME = os.getenv("MODEL_NAME")
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+    llm_config = {
+        "config_list": [
+            {
+                "api_type": "openai",
+                "model": MODEL_NAME,
+                "api_key": OPENAI_API_KEY,
+            }
+        ],
+    }
 
 except:
     logger.error("Failed to load environment variables. Please check your .env file.")

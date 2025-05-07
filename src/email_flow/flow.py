@@ -12,7 +12,7 @@ from .db_flow_functions import (
 )
 
 from .utils import (
-    authentication_email,
+    authenticate_client,
     generate_temp_id,
     authenticate_visitor
 )
@@ -42,7 +42,7 @@ def process_incoming_emails(DB_PATH, system_prompt_not_client, system_prompt_ema
             subject = email_data['subject']
             message_id = email_data.get('message_id')
             # thread_id = subject
-            client_id = authentication_email(DB_PATH, sender)
+            client_id = authenticate_client(DB_PATH, sender)
 
             if client_id:
                 save_message(DB_PATH, is_client=True, sender=sender, message=body, user_id=client_id)

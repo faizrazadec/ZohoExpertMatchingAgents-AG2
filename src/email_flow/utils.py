@@ -46,7 +46,7 @@ def generate_id(email: str, phone: str) -> str:
         log.error(f"Invalid email or phone number provided.")
         return None
     
-def authentication_email(DB_PATH, email: str) -> int | None:
+def authenticate_client(DB_PATH, email: str) -> int | None:
     log.info(f"Authenticating user with email: {email}")
     
     if not is_valid_email(email):
